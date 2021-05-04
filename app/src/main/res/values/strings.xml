@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Child Vaccination Tracker</string>
+    <string name="columnHeadingOne">Vaccine Status</string>
+    <string name="columnHeadingTwo">Age of child</string>
+</resources>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "652031769822",
+    "project_id": "projectfive-childvaccinetrack",
+    "storage_bucket": "projectfive-childvaccinetrack.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652031769822:android:51aa7da5307c2a186b964f",
+        "android_client_info": {
+          "package_name": "com.example.vaccinationtracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652031769822-3t33ihago6ea2snhdc85n8ge70d7s8gl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo9JzFNfgAWSxWH4Zj7TtKc9bJppcwyO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652031769822-3t33ihago6ea2snhdc85n8ge70d7s8gl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

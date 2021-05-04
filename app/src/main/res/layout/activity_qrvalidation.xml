@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:scrollbars="vertical"
+    tools:context=".QRValidationActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        tools:context=".QRValidationActivity">
+
+        <View
+            android:id="@+id/view4"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:background="@drawable/ic_wave_"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topview5" />
+
+        <View
+            android:id="@+id/topview5"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:background="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/scanButton"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="320dp"
+            android:background="@drawable/rounded_button"
+            android:text="Validate"
+            android:textColor="@android:color/background_light"
+            android:textSize="17sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/returnButton"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/scanButton"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/rounded_button"
+            android:text="Go Back"
+            android:textColor="@android:color/background_light"
+            android:textSize="17sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scanButton" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="191dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="QR Code Validation"
+            android:textColor="#F9FBFB"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/topview5"
+            app:layout_constraintHorizontal_bias="0.172"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/topview5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
