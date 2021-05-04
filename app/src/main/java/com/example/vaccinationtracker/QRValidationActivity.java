@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SearchRecentSuggestionsProvider;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,7 +40,8 @@ public class QRValidationActivity extends AppCompatActivity {
     private DatabaseReference doctorReference;
     private Button scanButton;
     private Button backButton;
-    private List<VaccineData> localUserChildVaccine = new ArrayList<>();
+    private final List<VaccineData> localUserChildVaccine = new ArrayList<>();
+    private final List<DoctorDB> doctorListFromDB = new ArrayList<>();
     private long qrDoctorID;
     private int[] requiredVaccineMetaData = new int[2];
 
@@ -58,26 +61,30 @@ public class QRValidationActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(mUser.getUid());
         doctorReference = FirebaseDatabase.getInstance().getReference().child("DoctorDB");
 
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        doctorReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                localUser.setUserChildren(snapshot.getValue(userDB.class).getUserChildren());
-                if (requiredVaccineMetaData.length == 2) {
-                    localUserChildVaccine = localUser.getUserChildren().get(requiredVaccineMetaData[0]).getChildVaccines();
-                } else {
-                    Toast.makeText(QRValidationActivity.this, "Fetching the data from Select Activity Failed!", Toast.LENGTH_SHORT).show();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    DoctorDB localDoctor = new DoctorDB();
+                    localDoctor.setDoctorName(dataSnapshot.getValue(DoctorDB.class).getDoctorName());
+                    localDoctor.setDoctorDegree(dataSnapshot.getValue(DoctorDB.class).getDoctorDegree());
+                    localDoctor.setDoctorCity(dataSnapshot.getValue(DoctorDB.class).getDoctorCity());
+                    localDoctor.setDoctorHospital(dataSnapshot.getValue(DoctorDB.class).getDoctorHospital());
+                    localDoctor.setDoctorID(dataSnapshot.getValue(DoctorDB.class).getDoctorID());
+                    doctorListFromDB.add(localDoctor);
                 }
-                scanButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        scanQR();
-                    }
-                });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(QRValidationActivity.this, "Fault in your child!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(QRValidationActivity.this, "Doctor details not available. Till we get them, you can keep vaccinating!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                scanQR();
             }
         });
 
@@ -85,20 +92,10 @@ public class QRValidationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentGoBack = new Intent(QRValidationActivity.this, VaccinesActivity.class);
+                intentGoBack.putExtra("childID", requiredVaccineMetaData[0]);
                 startActivity(intentGoBack);
             }
         });
-
-/*        if(requiredVaccineMetaData.length > 2){
-            modifiedVaccine = localUserChildVaccine.get(requiredVaccineMetaData[1]);
-            modifiedVaccine.setVaccincated(true);
-            {
-                localUserChildVaccine.set(requiredVaccineMetaData[1], modifiedVaccine);
-                localUser.getUserChildren().get(requiredVaccineMetaData[0]).setChildVaccines(localUserChildVaccine);
-                mDatabase.setValue(localUser);
-            }        }else{
-            Toast.makeText(QRValidationActivity.this, "Vaccination Failed!", Toast.LENGTH_LONG).show();
-        }*/
     }
 
     private void scanQR() {
@@ -117,8 +114,16 @@ public class QRValidationActivity extends AppCompatActivity {
                 qrDoctorID = Long.parseLong(intentResult.getContents());
                 if (qrDoctorID == tempDoctorID) {
                     System.out.println(qrDoctorID);
-                    Intent vaccinatedIntent = new Intent(getBaseContext(), VaccinatedActivity.class);
-                    startActivity(vaccinatedIntent);
+                    if (requiredVaccineMetaData.length == 2) {
+                        Log.d("My Tags", "Meta data can be sent.");
+                        System.out.println(requiredVaccineMetaData[0]);
+                        System.out.println(requiredVaccineMetaData[1]);
+                        Intent vaccinatedIntent = new Intent(getBaseContext(), VaccinatedActivity.class);
+                        vaccinatedIntent.putExtra("contentsForModifyingCloudData", requiredVaccineMetaData);
+                        startActivity(vaccinatedIntent);
+                    } else {
+                        System.out.println("Meta data cannot be shared.");
+                    }
                 } else {
                     Toast.makeText(getBaseContext(), "Doctor cannot be validated. Your child was not vaccinated.", Toast.LENGTH_LONG).show();
                 }

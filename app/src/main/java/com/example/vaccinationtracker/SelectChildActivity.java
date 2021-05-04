@@ -26,13 +26,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Timer;
+import java.util.List;
 
 public class SelectChildActivity extends AppCompatActivity {
 
     //creating ArrayList of String for storing the names of children
-    ArrayList<String> userChildrenList = new ArrayList<>();
+    ArrayList<String> userChildrenNameList = new ArrayList<>();
+    List<childDB> userChildrenList = new ArrayList<>();
     private FirebaseUser firebaseUser;
     private DatabaseReference databaseReference;
     private Button btnMainAddChild;
@@ -69,8 +72,8 @@ public class SelectChildActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                clearing the ArrayList to ensure nothing from past appears as Karma!
-                userChildrenList.clear();
-                userChildrenList.add("Select a child - ");
+                userChildrenNameList.clear();
+                userChildrenNameList.add("Select a child - ");
 
 //                fetching the names through the following route, FB DB -> Local Object user's child list -> Adapter(Only Names)
                 userFetchedFromDB = new userDB(snapshot.getValue(userDB.class).getUserChildren());
@@ -78,11 +81,12 @@ public class SelectChildActivity extends AppCompatActivity {
                 for (int i = 0; i < userFetchedFromDB.getUserChildren().size(); i++) {
                     //adding the names from local object
                     if (!(userFetchedFromDB.getUserChildren().get(i).getChildID() < 0)) {
-                        Log.d("ChildrenName", userFetchedFromDB.getUserChildren().get(i).getChildName());
-                        userChildrenList.add(userFetchedFromDB.getUserChildren().get(i).getChildName());
+                        userChildrenList.add(userFetchedFromDB.getUserChildren().get(i));
+                        userChildrenNameList.add(userFetchedFromDB.getUserChildren().get(i).getChildName());
                     }
                 }
                 spinnerFunction();
+                Log.d("My Tag", String.valueOf(userChildrenList.size()));
                 notificationFunction();
             }
 
@@ -118,27 +122,46 @@ public class SelectChildActivity extends AppCompatActivity {
             manager.createNotificationChannel(channel);
         }
 
-        {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(SelectChildActivity.this, "My Notification");
-            builder.setContentTitle("Vaccination Reminder!");
-            builder.setContentText("Vaccine Name for This child is due.");
-            builder.setSmallIcon(R.mipmap.ic_launcher_custom);
-            builder.setAutoCancel(true);
-            NotificationManagerCompat managerCompat = NotificationManagerCompat.from(SelectChildActivity.this);
-            managerCompat.notify(1, builder.build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            for (int i = 0; i < userChildrenList.size(); i++) {
+                if ((Math.toIntExact(
+                        ChronoUnit.WEEKS.between(
+                                LocalDate.of(userChildrenList.get(i).getChildDOB().getYear(), userChildrenList.get(i).getChildDOB().getMonth(), userChildrenList.get(i).getChildDOB().getDate()),
+                                LocalDate.now()))) == 3) {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(SelectChildActivity.this, "My Notification");
+                    builder.setContentTitle("Vaccination Reminder!");
+                    builder.setContentText("Buckle Up! First vaccine for " + userChildrenList.get(i).getChildName() + " is due.");
+                    builder.setSmallIcon(R.mipmap.ic_launcher_custom);
+                    builder.setAutoCancel(true);
+                    NotificationManagerCompat managerCompat = NotificationManagerCompat.from(SelectChildActivity.this);
+                    managerCompat.notify(1, builder.build());
+                }
+                if ((Math.toIntExact(
+                        ChronoUnit.WEEKS.between(
+                                LocalDate.of(userChildrenList.get(i).getChildDOB().getYear(), userChildrenList.get(i).getChildDOB().getMonth(), userChildrenList.get(i).getChildDOB().getDate()),
+                                LocalDate.now()))) == 5) {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(SelectChildActivity.this, "My Notification");
+                    builder.setContentTitle("Vaccination Reminder!");
+                    builder.setContentText("Vaccines for week 6 for " + userChildrenList.get(i).getChildName() + " are due.");
+                    builder.setSmallIcon(R.mipmap.ic_launcher_custom);
+                    builder.setAutoCancel(true);
+                    NotificationManagerCompat managerCompat = NotificationManagerCompat.from(SelectChildActivity.this);
+                    managerCompat.notify(1, builder.build());
+                }
+            }
         }
     }
 
     private void spinnerFunction() {
-        for (String defaultChildName : userChildrenList) {
+        for (String defaultChildName : userChildrenNameList) {
             if (defaultChildName == "108Name108108") {
-                userChildrenList.remove(defaultChildName);
+                userChildrenNameList.remove(defaultChildName);
             }
         }
         ArrayAdapter<String> childAdapter = new ArrayAdapter<String>(
                 SelectChildActivity.this,
                 android.R.layout.simple_spinner_dropdown_item,
-                userChildrenList
+                userChildrenNameList
         );
         childAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerChildren.setAdapter(childAdapter);
@@ -146,7 +169,7 @@ public class SelectChildActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i > 0) {
-                    Toast vaccinationReadyMsg = Toast.makeText(SelectChildActivity.this, userChildrenList.get(i) + " ready for vaccination!", Toast.LENGTH_LONG);
+                    Toast vaccinationReadyMsg = Toast.makeText(SelectChildActivity.this, userChildrenNameList.get(i) + " ready for vaccination!", Toast.LENGTH_SHORT);
                     vaccinationReadyMsg.show();
                 }
                 spinnerItemNumber = i;
@@ -154,7 +177,7 @@ public class SelectChildActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                Toast.makeText(SelectChildActivity.this, "Please select the child to be vaccinated!", Toast.LENGTH_LONG).show();
+                Toast.makeText(SelectChildActivity.this, "Please select the child to be vaccinated!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -170,7 +193,7 @@ public class SelectChildActivity extends AppCompatActivity {
             intent.putExtra("childID", selectedChild - 1);
             startActivity(intent);
         } else {
-            Toast.makeText(SelectChildActivity.this, "Please select the child first.", Toast.LENGTH_LONG).show();
+            Toast.makeText(SelectChildActivity.this, "Please select the child first.", Toast.LENGTH_SHORT).show();
         }
     }
 }

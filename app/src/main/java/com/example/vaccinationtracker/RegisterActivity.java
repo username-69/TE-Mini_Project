@@ -102,10 +102,11 @@ public class RegisterActivity extends AppCompatActivity {
         pattern = Pattern.compile(PASSWORD_PATTERN);
         matcher = pattern.matcher(getPassword);
         if (!matcher.matches()) {
-            edtMainRegisterPassword.setError("Not a valid password.");
-            edtMainRegisterPassword.requestFocus();
             edtMainRegisterPassword.getText().clear();
             getEdtMainRegisterConfirmPW.getText().clear();
+            edtMainRegisterPassword.setError("Not a valid password.");
+            getEdtMainRegisterConfirmPW.setError("Not a valid password.");
+            edtMainRegisterPassword.requestFocus();
             return;
         }
 

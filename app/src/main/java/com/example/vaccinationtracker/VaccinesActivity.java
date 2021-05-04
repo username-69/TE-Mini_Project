@@ -29,7 +29,7 @@ import java.util.List;
 public class VaccinesActivity extends AppCompatActivity {
 
     private final userDB localUser = new userDB();
-    private final childDB locaUserChild = new childDB();
+    private final childDB localUserChild = new childDB();
     private DatabaseReference mDatabase;
     private FirebaseUser firebaseUser;
     private Button button;
@@ -120,14 +120,19 @@ public class VaccinesActivity extends AppCompatActivity {
                     if(!validateVaccineStatus())
                         changedVaccineStatus.setChecked(false);
 */
-                    Intent intentQRValidation = new Intent(VaccinesActivity.this, QRValidationActivity.class);
-                    int checkboxID = changedVaccineStatus.getId();
-                    int[] content = new int[2];
-                    content[0] = childIDFromSelectActivity;
-                    content[1] = changedVaccineStatus.getId();
-                    content[1] -= 108;
-                    intentQRValidation.putExtra("contentsForQR", content);
-                    startActivity(intentQRValidation);
+                    if (localUser.getUserChildren().get(childIDFromSelectActivity).getChildAge() >= localUserChildVaccine.get(changedVaccineStatus.getId() - 108).getVaccineWeek()) {
+                        Intent intentQRValidation = new Intent(VaccinesActivity.this, QRValidationActivity.class);
+                        int checkboxID = changedVaccineStatus.getId();
+                        int[] content = new int[2];
+                        content[0] = childIDFromSelectActivity;
+                        content[1] = changedVaccineStatus.getId();
+                        content[1] -= 108;
+                        intentQRValidation.putExtra("contentsForQR", content);
+                        startActivity(intentQRValidation);
+                    } else {
+                        Toast.makeText(VaccinesActivity.this, "You cannot vaccinate the child with all vaccines in one go, just because the app permits!", Toast.LENGTH_SHORT).show();
+                        changedVaccineStatus.setChecked(false);
+                    }
                 } else {
                     Toast.makeText(VaccinesActivity.this, "Selected vaccine is already taken!", Toast.LENGTH_LONG).show();
                     changedVaccineStatus.setChecked(true);

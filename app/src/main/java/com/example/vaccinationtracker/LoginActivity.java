@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openActivity7();
+                openHelpActivity();
             }
         });
 
@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void openActivity7() {
+    public void openHelpActivity() {
         Intent intent = new Intent(this, HelpActivity.class);
         startActivity(intent);
     }
@@ -167,7 +167,8 @@ public class LoginActivity extends AppCompatActivity {
             edtMainSignInPassword.requestFocus();
             return;
         }
-
+//        Following is how the code should have been, first check if user is verified. But nonetheless for the sake of working sending password reset link without that condition.
+/*
         if (firebaseUser.isEmailVerified()) {
             mAuth.sendPasswordResetEmail(signInEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -182,6 +183,17 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             Toast.makeText(LoginActivity.this, "Cannot send reset password link to an unregistered user.", Toast.LENGTH_LONG).show();
         }
+*/
+        mAuth.sendPasswordResetEmail(signInEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "Please check your Email.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Please try again after sometime.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public void openSelectChildActivity() {
