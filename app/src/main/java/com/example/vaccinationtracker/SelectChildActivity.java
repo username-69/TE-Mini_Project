@@ -2,8 +2,13 @@ package com.example.vaccinationtracker;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class SelectChildActivity extends AppCompatActivity {
 
@@ -77,6 +83,7 @@ public class SelectChildActivity extends AppCompatActivity {
                     }
                 }
                 spinnerFunction();
+                notificationFunction();
             }
 
             @Override
@@ -101,6 +108,25 @@ public class SelectChildActivity extends AppCompatActivity {
                 startActivity(intentUserSignOut);
             }
         });
+
+    }
+
+    private void notificationFunction() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("My Notification", "My Notification", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(SelectChildActivity.this, "My Notification");
+            builder.setContentTitle("Vaccination Reminder!");
+            builder.setContentText("Vaccine Name for This child is due.");
+            builder.setSmallIcon(R.mipmap.ic_launcher_custom);
+            builder.setAutoCancel(true);
+            NotificationManagerCompat managerCompat = NotificationManagerCompat.from(SelectChildActivity.this);
+            managerCompat.notify(1, builder.build());
+        }
     }
 
     private void spinnerFunction() {
